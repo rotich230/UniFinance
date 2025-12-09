@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-7">
+        <h2><i class="fas fa-piggy-bank"></i> Savings Goals</h2>
+        <p class="text-muted">Track your progress towards specific items (e.g., PS5, Laptop, Business Capital).</p>
+    </div>
+    
+    <div class="col-md-5">
+        <div class="card p-3 bg-light border-0">
+            <form method="POST" class="d-flex gap-2">
+                {% csrf_token %}
+                <input type="text" name="goal_name" class="form-control" placeholder="Item Name (e.g. PS5)" required>
+                <input type="number" name="target_amount" class="form-control" placeholder="Target Price" required>
+                <button type="submit" class="btn btn-success">Add</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% for goal in goals %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm h-100 {% if goal.current_saved >= goal.target_amount %}border-success{% endif %}">
+            
+            <div class="card-body">
+                <h4 class="card-title d-flex justify-content-between align-items-center">
+                    {{ goal.name }}
+                    {% if goal.current_saved >= goal.target_amount %}
+                        <i class="fas fa-check-circle text-success"></i>
+                    {% endif %}
+                </h4>
+                
+                <h6 class="card-subtitle mb-3 text-muted">
+                    Target: KES {{ goal.target_amount }}
+                </h6>
+
+                {% if goal.current_saved >= goal.target_amount %}
+                    <div class="alert alert-success py-2 text-center">
+                        <strong>🎉 Congratulations!</strong><br>
+                        You have reached your goal for the <strong>{{ goal.name }}</strong>!
+                    </div>
+                {% else %}
+                    <p class="mb-1">Saved: <strong>{{ goal.current_saved }}</strong></p>
+                {% endif %}
+
+                <div class="progress mb-3" style="height: 25px;">
+                    <div class="progress-bar {% if goal.current_saved >= goal.target_amount %}bg-success{% else %}bg-primary{% endif %} progress-bar-striped" 
+                         role="progressbar" 
+                         style="width: {{ goal.progress }}%;">
+                         {{ goal.progress }}%
+                    </div>
+                </div>
+                
+                <div class="d-grid">
+                    <a href="{% url 'edit_savings_goal' goal.id %}" class="btn btn-outline-secondary btn-sm">
+                        Update / Add Money
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center mt-5">
+        <h4 class="text-muted">No goals yet. Add one above!</h4>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

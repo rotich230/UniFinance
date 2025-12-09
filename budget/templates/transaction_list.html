@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h2>My Transactions</h2>
+        <a href="{% url 'add_transaction' %}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Add New Transaction
+        </a>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card p-3 bg-light">
+            <form method="POST" class="d-flex">
+                {% csrf_token %}
+                <label class="me-2 align-self-center">Add Category:</label>
+                <input type="text" name="new_category" class="form-control me-2" placeholder="e.g. Snacks" required>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card p-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in transactions %}
+                <tr>
+                    <td>{{ t.date }}</td>
+                    <td>{{ t.category }}</td>
+                    <td>{{ t.description }}</td>
+                    <td>
+                        {% if t.type == 'INC' %}
+                            <span class="badge bg-success">Income</span>
+                        {% else %}
+                            <span class="badge bg-danger">Expense</span>
+                        {% endif %}
+                    </td>
+                    <td class="fw-bold">{{ t.amount }}</td>
+                    <td>
+                        <a href="{% url 'edit_transaction' t.id %}" class="btn btn-sm btn-warning text-white">
+                            Edit
+                        </a>
+                        <a href="{% url 'delete_transaction' t.id %}" class="btn btn-sm btn-danger">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center p-4">No transactions found. Add one!</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

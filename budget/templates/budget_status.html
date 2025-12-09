@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Budget Safety Check</h2>
+<p class="lead">Are you spending within your limits?</p>
+
+<div class="card p-4 shadow-sm">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Limit Set</th>
+                <th>Actually Spent</th>
+                <th>Remaining</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for b in analysis %}
+    <tr class="align-middle">
+        <td>{{ b.category }}</td>
+        <td>{{ b.limit }}</td>
+        <td>{{ b.spent }}</td>
+        <td>{{ b.remaining }}</td>
+        <td>
+            <span class="badge bg-{{ b.color }} p-2" style="font-size: 1em;">
+                {{ b.status }}
+            </span>
+        </td>
+        <td>
+            <a href="{% url 'edit_budget' b.id %}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-edit"></i> Edit Limit
+            </a>
+        </td>
+    </tr>
+    {% empty %}
+    {% endfor %}
+</tbody>
+    </table>
+</div>
+{% endblock %}

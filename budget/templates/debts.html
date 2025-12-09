@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .debt-container { max-width: 1000px; margin: 0 auto; padding: 20px; font-family: sans-serif; }
+    
+    /* Top: Add Debt Form */
+    .add-box { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 30px; display: flex; gap: 15px; align-items: flex-end; border: 1px solid #e5e7eb; }
+    .input-group { flex: 1; }
+    .input-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
+    .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; }
+    .btn-add { background: #6366f1; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; height: 42px; }
+    
+    /* Grid for 2 Columns */
+    .debt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+    
+    /* Lists */
+    .debt-list { background: white; padding: 20px; border-radius: 12px; border: 1px solid #e5e7eb; min-height: 200px; }
+    .list-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+    .green-title { color: #059669; }
+    .red-title { color: #dc2626; }
+    
+    /* Individual Card */
+    .debt-card { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #f3f4f6; }
+    .debt-info strong { display: block; font-size: 1.1rem; color: #1f2937; }
+    .debt-info small { color: #6b7280; }
+    
+    .actions { display: flex; gap: 5px; }
+    .btn-check { background: #10b981; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .btn-del { background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+</style>
+
+<div class="debt-container">
+    <h2>Debts Manager</h2>
+
+    <form method="POST" class="add-box">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_debt">
+        <div class="input-group"><label>Person Name</label><input type="text" name="person" placeholder="e.g. John" required></div>
+        <div class="input-group"><label>Amount</label><input type="number" name="amount" placeholder="500" required></div>
+        <div class="input-group"><label>Date</label><input type="date" name="date" required></div>
+        <div class="input-group">
+            <label>Type</label>
+            <select name="type">
+                <option value="owes_me">They Owe Me</option>
+                <option value="i_owe">I Owe Them</option>
+            </select>
+        </div>
+        <button type="submit" class="btn-add">Add</button>
+    </form>
+
+    <div class="debt-grid">
+        
+        <div class="debt-list">
+            <h3 class="list-title green-title">⬆️ People Owe Me</h3>
+            {% for d in owes_me %}
+            <div class="debt-card">
+                <div class="debt-info">
+                    <strong>{{ d.person }}</strong>
+                    <small>Amount: <span style="color:#059669; font-weight:bold;">{{ d.amount }}</span> | Date: {{ d.date }}</small>
+                </div>
+                <div class="actions">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="mark_paid">
+                        <input type="hidden" name="debt_id" value="{{ d.id }}">
+                        <button class="btn-check" title="Mark Paid">✓</button>
+                    </form>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete_debt">
+                        <input type="hidden" name="debt_id" value="{{ d.id }}">
+                        <button class="btn-del" title="Delete">×</button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <p style="color:#aaa; text-align:center; margin-top:20px;">No one owes you money.</p>
+            {% endfor %}
+        </div>
+
+        <div class="debt-list">
+            <h3 class="list-title red-title">⬇️ I Owe Them</h3>
+            {% for d in i_owe %}
+            <div class="debt-card">
+                <div class="debt-info">
+                    <strong>{{ d.person }}</strong>
+                    <small>Amount: <span style="color:#dc2626; font-weight:bold;">{{ d.amount }}</span> | Date: {{ d.date }}</small>
+                </div>
+                <div class="actions">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="mark_paid">
+                        <input type="hidden" name="debt_id" value="{{ d.id }}">
+                        <button class="btn-check" title="Mark Paid">✓</button>
+                    </form>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete_debt">
+                        <input type="hidden" name="debt_id" value="{{ d.id }}">
+                        <button class="btn-del" title="Delete">×</button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <p style="color:#aaa; text-align:center; margin-top:20px;">You are debt free!</p>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

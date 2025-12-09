@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 text-center">
+        <div class="card p-5 border-danger shadow">
+            <h2 class="text-danger mb-3">Delete Transaction?</h2>
+            <p class="lead">Are you sure you want to delete this record?</p>
+            <p class="fw-bold">{{ item.category }} - {{ item.amount }} ({{ item.date }})</p>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-lg me-2">Yes, Delete it</button>
+                <a href="{% url 'transaction_list' %}" class="btn btn-secondary btn-lg">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

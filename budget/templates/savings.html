@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .savings-container { max-width: 1000px; margin: 0 auto; padding: 20px; font-family: sans-serif; }
+    
+    /* Top: Add Goal */
+    .add-goal-box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 40px; display: flex; gap: 20px; align-items: flex-end; border: 1px solid #e5e7eb;}
+    .input-group { flex: 1; }
+    .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #374151; }
+    .input-group input { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; }
+    
+    .btn-save { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; height: 42px; }
+    .btn-save:hover { background: #2563eb; }
+
+    /* Cards */
+    .goals-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+    .goal-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
+    
+    .goal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .goal-title { font-size: 1.2rem; font-weight: bold; color: #1f2937; margin: 0; }
+    .goal-delete { background: none; border: none; color: #ef4444; font-weight: bold; cursor: pointer; font-size: 1.2rem; }
+    
+    /* Progress Bar */
+    .progress-track { background: #f3f4f6; height: 12px; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+    .progress-fill { height: 100%; background: #10b981; transition: width 0.5s ease-in-out; }
+    
+    .money-stats { display: flex; justify-content: space-between; font-size: 0.9rem; color: #6b7280; margin-bottom: 15px; }
+    .money-highlight { color: #111; font-weight: bold; }
+
+    /* Deposit Form */
+    .deposit-form { display: flex; gap: 10px; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
+    .deposit-input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+    .btn-deposit { background: #10b981; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+</style>
+
+<div class="savings-container">
+    <h2 style="margin-bottom: 20px;">My Savings Goals</h2>
+
+    <form method="POST" class="add-goal-box">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_goal">
+        <div class="input-group"><label>Goal Name</label><input type="text" name="goal_name" placeholder="e.g. Emergency Fund" required></div>
+        <div class="input-group"><label>Target</label><input type="number" name="target_amount" placeholder="50000" required></div>
+        <div class="input-group"><label>Start Balance</label><input type="number" name="current_saved" value="0"></div>
+        <button type="submit" class="btn-save">+ Add Goal</button>
+    </form>
+
+    <div class="goals-grid">
+        {% for goal in goals %}
+        <div class="goal-card">
+            <div class="goal-header">
+                <h3 class="goal-title">{{ goal.name }}</h3>
+                <form method="POST" onsubmit="return confirm('Delete this goal?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_goal">
+                    <input type="hidden" name="goal_id" value="{{ goal.id }}">
+                    <button class="goal-delete">×</button>
+                </form>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width: {{ goal.progress }}%;"></div></div>
+            <div class="money-stats"><span>Saved: <span class="money-highlight">{{ goal.current_saved }}</span></span><span>Target: {{ goal.target_amount }}</span></div>
+            
+            <form method="POST" class="deposit-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="deposit">
+                <input type="hidden" name="goal_id" value="{{ goal.id }}">
+                <input type="number" name="amount" class="deposit-input" placeholder="Deposit..." required>
+                <button type="submit" class="btn-deposit">Save</button>
+            </form>
+        </div>
+        {% empty %}
+        <p style="text-align: center; color: #888; grid-column: 1/-1;">No savings goals yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

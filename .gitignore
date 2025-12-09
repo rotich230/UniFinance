@@ -1,0 +1,13 @@
+# Virtual Environment (Huge folder, never push this)
+venv/
+env/
+
+# Database (Contains your passwords/data, keep local)
+db.sqlite3
+
+# Python compiled files (Junk files)
+__pycache__/
+*.pyc
+
+# System files
+.DS_Store

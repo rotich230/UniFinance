@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+    <h3 style="text-align: center; color: #333; margin-bottom: 20px;">Create an Account</h3>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem;">
+                    {{ field.label }}
+                </label>
+                {{ field }}
+                
+                {% if field.errors %}
+                    <div style="color: #dc2626; font-size: 0.8rem; margin-top: 5px;">
+                        {{ field.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" style="width: 100%; background: #10b981; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem;">
+            Sign Up
+        </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 20px; font-size: 0.9rem;">
+        Already have an account? <a href="{% url 'login' %}" style="color: #3b82f6; text-decoration: none;">Log in here</a>
+    </div>
+</div>
+
+<style>
+    input { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; }
+    ul { list-style: none; padding: 0; margin: 0; } /* Hides bullet points on errors */
+    .helptext { display: none; } /* Hides the long password help text for cleaner look */
+</style>
+{% endblock %}
